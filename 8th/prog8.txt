@@ -1,0 +1,102 @@
+package prog8;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.sql.*;
+
+public class MainApp extends JFrame{
+	private static final String URL = "jdbc:mysql://localhost:3306/CustomerDB1";
+	private static final String USER= "root";
+	private static final String PASSWORD = "khazi18";
+	
+	private JTextField custNameField,custStateField,creditLimitField;
+	private JButton insertButton,displayButton;
+	
+	public MainApp() {
+		setTitle("Customer Database");
+		setSize(400,400);
+		setLayout(new GridLayout(4,2));
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JLabel custname = new JLabel("customer name:");
+		custNameField = new JTextField(20);
+		JLabel custstate = new JLabel("customer state:");
+		custStateField = new JTextField(20);
+		JLabel creditlimit = new JLabel("credit limit:");
+		creditLimitField = new JTextField(20);
+		insertButton = new JButton("insert");
+		displayButton = new JButton("display");
+		
+		add(custname);
+		add(custNameField);
+		add(custstate);
+		add(custStateField);
+		add(creditlimit);
+		add(creditLimitField);
+		add(insertButton);
+		add(displayButton);
+		
+		insertButton.addActionListener(e -> insertCustomer());
+		displayButton.addActionListener(e -> displayCustomer());
+	}
+	
+	private void insertCustomer() {
+		String custName = custNameField.getText();
+		String custState = custStateField.getText();
+		String creditLimitStr = creditLimitField.getText();
+		double creditLimit = Double.parseDouble(creditLimitStr);
+		
+		try (Connection connection = DriverManager.getConnection(URL,USER,PASSWORD)){
+			String query = "INSERT INTO CustomerDB(custName,custState,creditLimit) VALUES(?,?,?)";
+			PreparedStatement preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1,custName);
+			preparedStatement.setString(2,custState);
+			preparedStatement.setDouble(3,creditLimit);
+			preparedStatement.executeUpdate();
+			
+			JOptionPane.showMessageDialog(this,"values inserted successfully");
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "errror inserting values","error",JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	private void displayCustomer(){
+		try (Connection connection = DriverManager.getConnection(URL,USER,PASSWORD)){
+			String query = "SELECT * FROM CustomerDB";
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(query);
+			StringBuilder results = new StringBuilder();
+			
+			while (resultSet.next()) {
+				int custNo = resultSet.getInt("CustNo");
+				String custName = resultSet.getString("CustName");
+				String custState = resultSet.getString("CustState");
+				double creditLimit = resultSet.getDouble("CreditLimit");
+				
+				
+				results.append("CustNo").append(custNo)
+					.append("CustName").append(custName)
+					.append("CustState").append(custState)
+					.append("CreditLimit").append(creditLimit).append("\n");
+			}
+			JOptionPane.showMessageDialog(this,results.toString(),"customer list",JOptionPane.INFORMATION_MESSAGE);
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "failed to display","error",JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(() -> new Mainapp1().setVisible(true));
+	}
+}
+
+//CREATE TABLE CustomerDB (
+//	    CustNo INT AUTO_INCREMENT PRIMARY KEY,
+//	    CustName VARCHAR(255) NOT NULL,
+//	    CustState VARCHAR(255) NOT NULL,
+//	    CreditLimit DOUBLE NOT NULL
+//	);
+
+

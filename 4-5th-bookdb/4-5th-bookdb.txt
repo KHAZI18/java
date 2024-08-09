@@ -1,0 +1,98 @@
+import java.util.*;
+import java.util.stream.Collectors;
+
+class Book {
+    private int id;
+    private String title;
+    private String author;
+    private String publisher;
+    private double price;
+
+    public Book(int id, String title, String author, String publisher, double price) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.publisher = publisher;
+        this.price = price;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    @Override
+    public String toString() {
+        return "id: " + id + " title: " + title + " author: " + author + " publisher: " + publisher + " price: " + price;
+    }
+}
+
+public class Bookdb {
+    private List<Book> books = new ArrayList<>();
+    private int nextId = 1;
+
+    // Add a book to the database
+    public void addBook(String title, String author, String publisher, double price) {
+        books.add(new Book(nextId++, title, author, publisher, price));
+    }
+
+    // Sort books by price and return a new list
+    public List<Book> getBooksSortedByPrice() {
+        return books.stream()
+                .sorted(Comparator.comparingDouble(Book::getPrice))
+                .collect(Collectors.toList());
+    }
+
+    // List all books by a specific author
+    public void listBooksByAuthor(String authorName) {
+        List<Book> booksByAuthor = books.stream()
+                .filter(book -> book.getAuthor().equalsIgnoreCase(authorName))
+                .collect(Collectors.toList());
+        if (booksByAuthor.isEmpty()) {
+            System.out.println("No books found for author: " + authorName);
+        } else {
+            booksByAuthor.forEach(System.out::println);
+        }
+    }
+
+    // Display all books
+    public void displayAllBooks() {
+        if (books.isEmpty()) {
+            System.out.println("No books in the database.");
+        } else {
+            books.forEach(System.out::println);
+        }
+    }
+
+    public static void main(String[] args) {
+        BookDatabase db = new BookDatabase();
+        db.addBook("Book A", "Author X", "Publisher Y", 29.99);
+        db.addBook("Book B", "Author X", "Publisher Z", 19.99);
+        db.addBook("Book C", "Author Z", "Publisher Y", 39.99);
+
+        System.out.println("Books sorted by price:");
+        List<Book> sortedBooks = db.getBooksSortedByPrice();
+        sortedBooks.forEach(System.out::println);
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter author name to search:");
+        String authorName = scanner.nextLine();
+        System.out.println("Books by " + authorName + ":");
+        db.listBooksByAuthor(authorName);
+    }
+}

@@ -1,0 +1,87 @@
+// package prog7;
+
+import javax.swing.*;
+import java.util.HashMap;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+
+public class prog7 extends JFrame {
+    private JTextField itemIdField, quantityField;
+    private JLabel itemNameLabel, itemPriceLabel;
+    private HashMap<String, String> itemNameMap = new HashMap<>();
+    private HashMap<String, Double> itemPriceMap = new HashMap<>();
+    
+    public prog7() {
+        itemNameMap.put("101", "bat");
+        itemPriceMap.put("101", 100.0);
+        itemNameMap.put("102", "ball");
+        itemPriceMap.put("102", 50.0);
+
+        setTitle("Shopping App");
+        setSize(400, 400);
+        setLayout(new GridLayout(6, 2));
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JLabel itemIdLabel = new JLabel("ITEM ID");
+        itemIdField = new JTextField(20);
+        JLabel itemQuantityLabel = new JLabel("QUANTITY");
+        quantityField = new JTextField(20);
+        itemNameLabel = new JLabel("ITEM NAME");
+        itemPriceLabel = new JLabel("ITEM PRICE");
+        JButton calculateBtn = new JButton("Calculate");
+        JButton printBtn = new JButton("Print");
+
+        add(itemIdLabel);
+        add(itemIdField);
+        add(itemQuantityLabel);
+        add(quantityField);
+        add(itemNameLabel);
+        add(itemPriceLabel);
+        add(calculateBtn);
+        add(printBtn);
+
+        calculateBtn.addActionListener(e -> calculateCost());
+        printBtn.addActionListener(e -> printCost());
+    }
+
+    private void calculateCost() {
+        String itemId = itemIdField.getText();
+        int quantity = Integer.parseInt(quantityField.getText());
+        String itemName = itemNameMap.getOrDefault(itemId, null);
+
+        if (itemName != null) {
+            double totalCost = itemPriceMap.get(itemId) * quantity;
+            itemNameLabel.setText("Item Name: " + itemName);
+            itemPriceLabel.setText("Total Price: $" + totalCost);
+        } else {
+            itemNameLabel.setText("Item Name: ");
+            itemPriceLabel.setText("Total Cost: ");
+            JOptionPane.showMessageDialog(this, "Invalid item ID", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void printCost() {
+        String[] discountOptions = {"None", "10%", "20%", "30%"};
+        String selectedDiscount = (String) JOptionPane.showInputDialog(this, "Select discount", "Discount Options", JOptionPane.QUESTION_MESSAGE, null, discountOptions, discountOptions[0]);
+
+        if (selectedDiscount != null) {
+            double discount = switch (selectedDiscount) {
+                case "10%" -> 0.10;
+                case "20%" -> 0.20;
+                case "30%" -> 0.30;
+                default -> 0.0;
+            };
+
+            double totalCost = Double.parseDouble(itemPriceLabel.getText().replace("Total Price: $", ""));
+            double finalCost = totalCost * (1 - discount);
+
+            JOptionPane.showMessageDialog(this, "Item Name: " + itemNameLabel.getText().replace("Item Name: ", "") +
+                            "\nTotal Cost: $" + totalCost + "\nDiscount: " + selectedDiscount + "\nFinal Cost: $" + finalCost,
+                    "Final Cost", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new prog7().setVisible(true));
+    }
+}

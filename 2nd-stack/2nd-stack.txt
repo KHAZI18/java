@@ -1,0 +1,93 @@
+import java.util.ArrayList;
+import java.util.List;
+
+// Generic Stack class with a maximum size
+class Stack<T> {
+    List<T> elements = new ArrayList<>();
+    final int maxSize;
+
+    // Constructor to set the maximum size
+    Stack(int maxSize) {
+        this.maxSize = maxSize;
+    }
+
+    // Push an element onto the stack
+    void push(T element) {
+        if (elements.size() < maxSize) {
+            elements.add(element);
+        }
+    }
+
+    // Pop an element from the stack
+    T pop() {
+        if (isEmpty()) {
+            return null; // Return null if stack is empty
+        }
+        return elements.remove(elements.size() - 1);
+    }
+
+    // Peek at the top element of the stack without removing it
+    T peek() {
+        if (isEmpty()) {
+            return null; // Return null if stack is empty
+        }
+        return elements.get(elements.size() - 1);
+    }
+
+    // Clear the stack
+    void clear() {
+        elements.clear();
+    }
+
+    // Check if the stack is empty
+    boolean isEmpty() {
+        return elements.isEmpty();
+    }
+
+    // Check if the stack is full
+    boolean isFull() {
+        return elements.size() >= maxSize;
+    }
+
+    // Display the elements of the stack
+    void display() {
+        if (isEmpty()) {
+            System.out.println("Stack is empty");
+        } else {
+            System.out.println("Stack contents: " + elements);
+        }
+    }
+}
+
+// Demonstration of Stack class with String and Integer
+public class StackDemo {
+    public static void main(String[] args) {
+        // Stack of Strings with a maximum size of 2
+        Stack<String> stringStack = new Stack<>(2);
+        stringStack.push("Hello");
+        stringStack.push("World");
+        stringStack.display(); // Output: Stack contents: [Hello, World]
+
+        // Attempt to push another element (won't be added since stack is full)
+        stringStack.push("Overflow");
+        System.out.println("Peeked element: " + stringStack.peek()); // Output: Peeked element: World
+        System.out.println("Popped element: " + stringStack.pop()); // Output: Popped element: World
+        stringStack.display(); // Output: Stack contents: [Hello]
+
+        // Stack of Integers with a maximum size of 3
+        Stack<Integer> integerStack = new Stack<>(3);
+        integerStack.push(1);
+        integerStack.push(2);
+        integerStack.push(3);
+        integerStack.display(); // Output: Stack contents: [1, 2, 3]
+
+        // Attempt to push another element (won't be added since stack is full)
+        integerStack.push(4);
+        System.out.println("Peeked element: " + integerStack.peek()); // Output: Peeked element: 3
+        System.out.println("Popped element: " + integerStack.pop()); // Output: Popped element: 3
+        integerStack.display(); // Output: Stack contents: [1, 2]
+
+        integerStack.clear();
+        integerStack.display(); // Output: Stack is empty
+    }
+}
